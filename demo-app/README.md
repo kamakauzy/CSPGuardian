@@ -17,6 +17,36 @@ This demo app simulates a typical enterprise .NET application with:
 - Modern .NET Core patterns
 - Third-party library integration patterns
 
+## Running the Application
+
+### Prerequisites
+
+- .NET Framework 4.7.2 or later
+- Visual Studio 2019/2022 (recommended) OR IIS Express
+
+### Option 1: Visual Studio (Recommended)
+
+1. Open Visual Studio
+2. File > Open > Web Site
+3. Select the `demo-app` folder
+4. Press F5 to run
+5. The application will open in your browser at `http://localhost:xxxx`
+
+### Option 2: IIS Express (Command Line)
+
+1. Ensure IIS Express is installed (comes with Visual Studio)
+2. Run the PowerShell script:
+   ```powershell
+   .\run.ps1
+   ```
+3. Open browser to `http://localhost:8080`
+
+### Option 3: Manual IIS Express
+
+```bash
+"C:\Program Files\IIS Express\iisexpress.exe" /path:"C:\path\to\demo-app" /port:8080
+```
+
 ## Application Structure
 
 ```
@@ -57,7 +87,7 @@ demo-app/
 │   └── site.css                   - External styles (good practice)
 ├── App_Code/
 │   └── Helpers.cshtml             - Helper methods
-└── Web.config                     - Configuration (legacy)
+└── Web.config                     - Configuration
 ```
 
 ## Running CSPGuardian
@@ -150,3 +180,20 @@ This demo app should trigger a comprehensive set of violations:
 ## Note
 
 This is a demo/test application only. It is intentionally designed with CSP violations to test CSPGuardian's detection and cleanup capabilities. It is not meant to be run as a production web application.
+
+## Troubleshooting
+
+### "Cannot find .NET Framework"
+- Install .NET Framework 4.7.2 or later from Microsoft
+
+### "IIS Express not found"
+- Install Visual Studio (includes IIS Express)
+- Or download IIS Express separately
+
+### "Compilation errors"
+- Ensure all NuGet packages are restored
+- In Visual Studio: Right-click solution > Restore NuGet Packages
+
+### "Views not rendering"
+- Check that Views folder is included in the project
+- Ensure Web.config has proper MVC configuration
