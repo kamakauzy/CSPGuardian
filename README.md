@@ -8,12 +8,12 @@ Want to actually pass a security audit without rewriting your entire codebase?
 
 CSPGuardian is here to save the day!
 
-A powerful CLI tool that helps .NET/C# developers transform their codebases from CSP-violation nightmares into security-compliant masterpieces. Automatically detect, fix, and generate proper Content Security Policies—because `unsafe-inline` is not a security feature, it's a cry for help.
+A powerful CLI tool that helps .NET/C# developers transform their codebases from CSP-violation nightmares into security-compliant masterpieces. Automatically detect, fix, and generate proper Content Security Policies - because `unsafe-inline` is not a security feature, it's a cry for help.
 
 ## What CSPGuardian Does
 
 Think of CSPGuardian as your personal security consultant that:
-- Scans your entire codebase (HTML, Razor, Web Forms, JS, CSS—you name it!)
+- Scans your entire codebase (HTML, Razor, Web Forms, JS, CSS - you name it!)
 - Cleans up inline scripts and styles (externalize, hash, or nonce them)
 - Generates proper CSP policies that actually work
 - Handles legacy .NET without requiring a full rewrite
@@ -27,8 +27,8 @@ All while keeping your sanity intact!
 Recursively hunts down those pesky inline scripts and styles like a bloodhound. Finds:
 - Inline `<script>` tags (the usual suspects)
 - Inline `<style>` tags (sneaky CSS violators)
-- Event handlers (`onclick`, `onload`, etc.—the old-school way)
-- Dynamic code execution (`eval()`, `Function()`—the dangerous stuff)
+- Event handlers (`onclick`, `onload`, etc. - the old-school way)
+- Dynamic code execution (`eval()`, `Function()` - the dangerous stuff)
 - Legacy .NET patterns (WebResource.axd, ViewState shenanigans)
 
 ### Cleanup Options (Pick Your Poison)
@@ -55,9 +55,9 @@ Builds proper CSP headers that won't make security auditors cry. Includes:
 ### Framework Support
 Works with:
 - Modern .NET Core/Blazor (the cool kids)
-- Legacy .NET (MVC 4/Web Forms—we don't judge)
+- Legacy .NET (MVC 4/Web Forms - we don't judge)
 - Static sites (simple but effective)
-- JS frameworks (React, Angular, Vue—the modern stack)
+- JS frameworks (React, Angular, Vue - the modern stack)
 
 ### Reporting & Auditing
 Generate beautiful reports in:
@@ -142,7 +142,7 @@ After running CSPGuardian, you'll find:
 CSPGuardian can scan:
 - HTML/HTM files
 - CSHTML (Razor views)
-- ASPX (Web Forms—yes, those still exist)
+- ASPX (Web Forms - yes, those still exist)
 - ASCX (User Controls)
 - JavaScript files (.js)
 - CSS files (.css)
