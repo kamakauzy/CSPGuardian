@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CSPGuardian Demo</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a class="navbar-brand" href="/">CSPGuardian Demo</a>
+                <ul class="navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/Home/About">About</a></li>
+                    <li><a href="/Home/Contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year - CSPGuardian Demo Application</p>
+        </div>
+    </footer>
+
+    <!-- Inline Script Violation in Layout -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Layout loaded');
+        });
+    </script>
+    
+    <!-- Inline Style Violation in Layout -->
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        
+        .navbar {
+            margin-bottom: 0;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

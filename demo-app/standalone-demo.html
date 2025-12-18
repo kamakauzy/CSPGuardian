@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSPGuardian Demo - Standalone</title>
+    <style>
+        /* External CSS - Good practice */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav {
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 5px 5px 0 0;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .violation-badge {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .violation-badge strong {
+            color: #856404;
+        }
+        .code-block {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .code-block code {
+            font-family: 'Courier New', monospace;
+        }
+        h1 { color: #007bff; }
+        h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="#home">Home</a>
+            <a href="#products">Products</a>
+            <a href="#orders">Orders</a>
+            <a href="#admin">Admin</a>
+        </div>
+
+        <h1>CSPGuardian Demo Application</h1>
+        <p>This standalone HTML file demonstrates the CSP violations found in the demo application. Open this file directly in your browser to see the violations.</p>
+
+        <div id="home">
+            <h2>Home Page - Index.cshtml</h2>
+            <div class="violation-badge">
+                <strong>CSP Violations Detected:</strong>
+                <ul>
+                    <li>Inline &lt;script&gt; tag with jQuery DataTable initialization</li>
+                    <li>Inline &lt;style&gt; tag with CSS rules</li>
+                    <li>Event handlers (onclick) in buttons</li>
+                </ul>
+            </div>
+
+            <!-- This is an INLINE SCRIPT VIOLATION -->
+            <script>
+                console.log('This inline script violates CSP!');
+                document.addEventListener('DOMContentLoaded', function() {
+                    alert('Page loaded with inline script!');
+                });
+            </script>
+
+            <!-- This is an INLINE STYLE VIOLATION -->
+            <style>
+                .demo-box {
+                    background: #e3f2fd;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                }
+            </style>
+
+            <div class="demo-box">
+                <h3>Demo Content</h3>
+                <p>This page contains inline scripts and styles that CSPGuardian will detect.</p>
+                <button onclick="showAlert()" class="btn">Click Me (onclick violation)</button>
+            </div>
+
+            <div class="code-block">
+                <strong>Example Violation Code:</strong>
+                <pre><code>&lt;script&gt;
+    $(document).ready(function() {
+        $('#dataTable').DataTable({...});
+    });
+&lt;/script&gt;
+
+&lt;style&gt;
+    .jumbotron { background-color: #f0f0f0; }
+&lt;/style&gt;
+
+&lt;button onclick="handleClick()"&gt;Click&lt;/button&gt;</code></pre>
+            </div>
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <div id="products">
+            <h2>Products Page - Products/Index.cshtml</h2>
+            <div class="violation-badge">
+                <strong>CSP Violations Detected:</strong>
+                <ul>
+                    <li>Inline DataTable configuration</li>
+                    <li>Inline AJAX handlers with success/error callbacks</li>
+                    <li>Multiple onclick event handlers</li>
+                    <li>Inline styles for table formatting</li>
+                </ul>
+            </div>
+
+            <script>
+                function deleteProduct(id) {
+                    if (confirm('Delete product ' + id + '?')) {
+                        // Inline AJAX call - violation
+                        fetch('/Products/DeleteProduct', {
+                            method: 'POST',
+                            body: JSON.stringify({ id: id })
+                        }).then(function(response) {
+                            return response.json();
+                        }).then(function(data) {
+                            if (data.success) {
+                                alert('Product deleted!');
+                            }
+                        });
+                    }
+                }
+            </script>
+
+            <style>
+                .product-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .product-table th {
+                    background: #007bff;
+                    color: white;
+                    padding: 10px;
+                }
+            </style>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Product 1</td>
+                        <td>$29.99</td>
+                        <td>
+                            <button onclick="editProduct(1)" class="btn">Edit</button>
+                            <button onclick="deleteProduct(1)" class="btn">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <div id="orders">
+            <h2>Orders Page - Orders/Details.cshtml</h2>
+            <div class="violation-badge">
+                <strong>CSP Violations Detected:</strong>
+                <ul>
+                    <li><strong>eval()</strong> usage for JSON parsing</li>
+                    <li><strong>Function()</strong> constructor</li>
+                    <li>Dynamic script injection</li>
+                    <li>setTimeout with string parameter</li>
+                </ul>
+            </div>
+
+            <script>
+                // VIOLATION: Using eval() for JSON parsing
+                function parseOrderData(jsonString) {
+                    try {
+                        // BAD: Using eval
+                        var data = eval('(' + jsonString + ')');
+                        return data;
+                    } catch (e) {
+                        console.error('Error:', e);
+                        return null;
+                    }
+                }
+
+                // VIOLATION: Function constructor
+                function createValidator(rule) {
+                    return new Function('value', 'return ' + rule + ';');
+                }
+
+                // VIOLATION: setTimeout with string
+                setTimeout("console.log('This uses eval!');", 1000);
+
+                // Example usage
+                var mockData = '{"orderId": 1001, "total": 129.99}';
+                var order = parseOrderData(mockData);
+                console.log('Parsed order:', order);
+            </script>
+
+            <div class="code-block">
+                <strong>Dynamic Code Violations:</strong>
+                <pre><code>// BAD: eval() usage
+var data = eval('(' + jsonString + ')');
+
+// BAD: Function constructor
+var func = new Function('a', 'b', 'return a + b');
+
+// BAD: setTimeout with string
+setTimeout("alert('violation')", 1000);</code></pre>
+            </div>
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <div id="admin">
+            <h2>Admin Dashboard - Admin/Dashboard.cshtml</h2>
+            <div class="violation-badge">
+                <strong>CSP Violations Detected:</strong>
+                <ul>
+                    <li>Multiple eval() calls for statistics</li>
+                    <li>Event handlers (onmouseover, onmouseout)</li>
+                    <li>Dynamic script loading</li>
+                    <li>Inline chart initialization</li>
+                </ul>
+            </div>
+
+            <div onmouseover="highlightCard(this)" onmouseout="unhighlightCard(this)" style="padding: 20px; border: 1px solid #ddd; margin: 10px 0;">
+                <h3>Statistics Card</h3>
+                <p>Hover over this card to see event handler violations</p>
+            </div>
+
+            <script>
+                function highlightCard(element) {
+                    element.style.backgroundColor = '#e3f2fd';
+                }
+
+                function unhighlightCard(element) {
+                    element.style.backgroundColor = 'white';
+                }
+
+                // Dynamic script loading violation
+                function loadExternalScript(url) {
+                    var script = document.createElement('script');
+                    script.src = url;
+                    script.onload = function() {
+                        console.log('Script loaded:', url);
+                    };
+                    document.head.appendChild(script);
+                }
+            </script>
+        </div>
+
+        <hr style="margin: 40px 0;">
+
+        <div>
+            <h2>Summary</h2>
+            <p>This demo application contains <strong>75+ CSP violations</strong> including:</p>
+            <ul>
+                <li><strong>20+</strong> InlineScript violations</li>
+                <li><strong>15+</strong> InlineStyle violations</li>
+                <li><strong>30+</strong> EventHandler violations</li>
+                <li><strong>10+</strong> DynamicInline violations (eval, Function)</li>
+            </ul>
+            <p>Use CSPGuardian to scan and fix these violations:</p>
+            <div class="code-block">
+                <code>cspguard scan --path ./demo-app --framework modern-dotnet</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAlert() {
+            alert('This button uses an onclick handler - CSP violation!');
+        }
+
+        function editProduct(id) {
+            alert('Edit product ' + id + ' (onclick violation)');
+        }
+    </script>
+</body>
+</html>
+
