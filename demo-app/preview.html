@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSPGuardian Demo - Preview</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .page { border: 1px solid #ddd; padding: 20px; margin: 20px 0; }
+        .violation { background: #fff3cd; padding: 10px; margin: 10px 0; border-left: 4px solid #ffc107; }
+        h2 { color: #007bff; }
+        code { background: #f4f4f4; padding: 2px 5px; }
+    </style>
+</head>
+<body>
+    <h1>CSPGuardian Demo Application - File Structure Preview</h1>
+    
+    <div class="page">
+        <h2>Home/Index.cshtml</h2>
+        <div class="violation">
+            <strong>CSP Violations:</strong>
+            <ul>
+                <li>Inline &lt;script&gt; tag with jQuery DataTable initialization</li>
+                <li>Inline &lt;style&gt; tag with CSS</li>
+                <li>Event handlers in buttons</li>
+            </ul>
+        </div>
+        <p>This page demonstrates inline scripts and styles for testing CSPGuardian.</p>
+    </div>
+    
+    <div class="page">
+        <h2>Products/Index.cshtml</h2>
+        <div class="violation">
+            <strong>CSP Violations:</strong>
+            <ul>
+                <li>Inline DataTable configuration</li>
+                <li>Inline AJAX handlers</li>
+                <li>onclick event handlers</li>
+                <li>Inline styles</li>
+            </ul>
+        </div>
+        <p>Product listing page with complex inline scripts.</p>
+    </div>
+    
+    <div class="page">
+        <h2>Orders/Details.cshtml</h2>
+        <div class="violation">
+            <strong>CSP Violations:</strong>
+            <ul>
+                <li><code>eval()</code> usage for JSON parsing</li>
+                <li>Function() constructor</li>
+                <li>Dynamic script loading</li>
+            </ul>
+        </div>
+        <p>Order details with dynamic code execution violations.</p>
+    </div>
+    
+    <div class="page">
+        <h2>Admin/Dashboard.cshtml</h2>
+        <div class="violation">
+            <strong>CSP Violations:</strong>
+            <ul>
+                <li>Multiple <code>eval()</code> calls</li>
+                <li>setTimeout with string</li>
+                <li>Dynamic script injection</li>
+                <li>Event handlers (onmouseover, onmouseout)</li>
+            </ul>
+        </div>
+        <p>Admin dashboard with extensive inline scripts.</p>
+    </div>
+    
+    <div class="page">
+        <h2>Scripts/custom.js</h2>
+        <div class="violation">
+            <strong>CSP Violations:</strong>
+            <ul>
+                <li><code>eval()</code> for JSON parsing</li>
+                <li>Function() constructor</li>
+                <li>setTimeout/setInterval with strings</li>
+            </ul>
+        </div>
+    </div>
+    
+    <hr>
+    <p><strong>Note:</strong> This is a preview. To see the full application with all violations, you need to run it in Visual Studio or IIS Express.</p>
+    <p><strong>Total Files:</strong> 34 files with extensive CSP violations for testing CSPGuardian.</p>
+</body>
+</html>
+
