@@ -1,23 +1,23 @@
 # CSPGuardian
 
-> **Your codebase's security superhero, fighting XSS villains one inline script at a time!**
+Your codebase's security superhero, fighting XSS villains one inline script at a time!
 
 Tired of pentesters giving you the side-eye because your CSP policy is basically `script-src 'unsafe-inline' 'unsafe-eval' *`?  
 Worried about that legacy .NET app that's held together with inline scripts and duct tape?  
 Want to actually pass a security audit without rewriting your entire codebase?
 
-**CSPGuardian is here to save the day!**
+CSPGuardian is here to save the day!
 
 A powerful CLI tool that helps .NET/C# developers transform their codebases from CSP-violation nightmares into security-compliant masterpieces. Automatically detect, fix, and generate proper Content Security Policies—because `unsafe-inline` is not a security feature, it's a cry for help.
 
 ## What CSPGuardian Does
 
 Think of CSPGuardian as your personal security consultant that:
-- **Scans** your entire codebase (HTML, Razor, Web Forms, JS, CSS—you name it!)
-- **Cleans up** inline scripts and styles (externalize, hash, or nonce them)
-- **Generates** proper CSP policies that actually work
-- **Handles legacy .NET** without requiring a full rewrite
-- **Reports** everything in beautiful JSON/CSV/Markdown formats
+- Scans your entire codebase (HTML, Razor, Web Forms, JS, CSS—you name it!)
+- Cleans up inline scripts and styles (externalize, hash, or nonce them)
+- Generates proper CSP policies that actually work
+- Handles legacy .NET without requiring a full rewrite
+- Reports everything in beautiful JSON/CSV/Markdown formats
 
 All while keeping your sanity intact!
 
@@ -34,15 +34,15 @@ Recursively hunts down those pesky inline scripts and styles like a bloodhound. 
 ### Cleanup Options (Pick Your Poison)
 
 **Externalize**  
-*"Get that script out of my HTML!"*  
+"Get that script out of my HTML!"  
 Extracts inline content to proper `.js`/`.css` files. Your HTML will thank you.
 
 **Hashing**  
-*"Fingerprint everything!"*  
+"Fingerprint everything!"  
 Computes SHA-256/384/512 hashes for CSP whitelisting. Because trust, but verify.
 
 **Noncing**  
-*"One-time use only!"*  
+"One-time use only!"  
 Generates per-request nonces with ready-to-use code snippets. Fresh and secure every time.
 
 ### CSP Policy Generation
@@ -61,9 +61,9 @@ Works with:
 
 ### Reporting & Auditing
 Generate beautiful reports in:
-- **Markdown** (for humans)
-- **JSON** (for machines)
-- **CSV** (for spreadsheets)
+- Markdown (for humans)
+- JSON (for machines)
+- CSV (for spreadsheets)
 
 Perfect for pentest handoffs, compliance audits, or just showing your boss you care about security!
 
@@ -92,31 +92,31 @@ dotnet publish -c Release
 ```bash
 cspguard scan --path ./MyApp --framework modern-dotnet
 ```
-*See what violations you have. Knowledge is power!*
+See what violations you have. Knowledge is power!
 
 ### Scan with Hash Cleanup (The "Fix It Now" Command)
 ```bash
 cspguard scan --path ./MyApp --framework modern-dotnet --cleanup hash --output policy.csp
 ```
-*Automatically hash everything and generate a CSP policy. Magic!*
+Automatically hash everything and generate a CSP policy. Magic!
 
 ### Legacy .NET Mode (The "Help Me, I'm Stuck" Command)
 ```bash
 cspguard scan --path ./LegacyApp --framework legacy-dotnet --legacy-mode --cleanup externalize
 ```
-*For those old MVC 4/Web Forms apps that refuse to die. We've got your back!*
+For those old MVC 4/Web Forms apps that refuse to die. We've got your back!
 
 ### CI/CD Mode (The "Break the Build" Command)
 ```bash
 cspguard scan --path ./MyApp --ci-mode --report-format json
 ```
-*Fail your CI pipeline if violations are found. Because security matters!*
+Fail your CI pipeline if violations are found. Because security matters!
 
 ### Dry Run (The "Just Looking" Command)
 ```bash
 cspguard scan --path ./MyApp --cleanup externalize --dry-run
 ```
-*See what would happen without actually doing it. Safety first!*
+See what would happen without actually doing it. Safety first!
 
 ## Command Options
 
@@ -153,12 +153,12 @@ CSPGuardian detects and reports:
 
 | Type | Description | Severity |
 |------|-------------|----------|
-| **InlineScript** | Inline `<script>` tags without `src` | High |
-| **InlineStyle** | Inline `<style>` tags | Medium |
-| **EventHandler** | Event handler attributes (`onclick`, etc.) | High |
-| **DynamicInline** | Dynamic code (`eval()`, `Function()`) | High |
-| **LegacyWebResource** | WebResource.axd references | Low |
-| **ViewStateEmbedded** | ViewState with embedded script | Medium |
+| InlineScript | Inline `<script>` tags without `src` | High |
+| InlineStyle | Inline `<style>` tags | Medium |
+| EventHandler | Event handler attributes (`onclick`, etc.) | High |
+| DynamicInline | Dynamic code (`eval()`, `Function()`) | High |
+| LegacyWebResource | WebResource.axd references | Low |
+| ViewStateEmbedded | ViewState with embedded script | Medium |
 
 ## Real-World Examples
 
@@ -166,25 +166,25 @@ CSPGuardian detects and reports:
 ```bash
 cspguard scan --path ./src --framework modern-dotnet --cleanup hash --output csp-policy.txt
 ```
-*Perfect for your shiny new .NET 8 app!*
+Perfect for your shiny new .NET 8 app!
 
 ### Example 2: That Old MVC 4 App Nobody Wants to Touch
 ```bash
 cspguard scan --path ./LegacyMVC4 --framework legacy-dotnet --legacy-mode --cleanup externalize
 ```
-*Because sometimes you have to work with what you've got.*
+Because sometimes you have to work with what you've got.
 
 ### Example 3: CI/CD Pipeline Integration
 ```bash
 cspguard scan --path ./app --ci-mode --report-format json
 ```
-*Automate security checks in your pipeline. Set it and forget it!*
+Automate security checks in your pipeline. Set it and forget it!
 
 ## Contributing
 
 Found a bug? Have an idea? Want to make CSPGuardian even better?
 
-**We'd love your help!**
+We'd love your help!
 
 1. Fork the repo
 2. Create a feature branch
@@ -199,10 +199,10 @@ MIT License - because security tools should be free and open!
 
 ## Version
 
-**1.0.0 (MVP)** - The first step in your journey to CSP compliance!
+1.0.0 (MVP) - The first step in your journey to CSP compliance!
 
 ---
 
-**Made with love for developers who care about security (and their sanity)**
+Made with love for developers who care about security (and their sanity)
 
-*Remember: `unsafe-inline` is not a feature, it's a temporary solution that became permanent. Let CSPGuardian help you fix that!*
+Remember: `unsafe-inline` is not a feature, it's a temporary solution that became permanent. Let CSPGuardian help you fix that!
