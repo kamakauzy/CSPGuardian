@@ -1,0 +1,49 @@
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <p>&copy; @DateTime.Now.Year CSPGuardian Demo Application. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-right">
+                <p>
+                    <a href="#" onclick="showAbout()">About</a> |
+                    <a href="#" onclick="showPrivacy()">Privacy</a> |
+                    <a href="#" onclick="showTerms()">Terms</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function showAbout() {
+        alert('This is a demo application for testing CSPGuardian.');
+    }
+    
+    function showPrivacy() {
+        alert('Privacy policy: This is a demo app with no real data.');
+    }
+    
+    function showTerms() {
+        alert('Terms of service: Demo purposes only.');
+    }
+</script>
+
+<style>
+    .footer {
+        margin-top: 50px;
+        padding: 20px 0;
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .footer a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+

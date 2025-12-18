@@ -1,0 +1,109 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewBag.Title = "Products";
+}
+
+<h2>Product Management</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-primary" onclick="trackEvent('product_create_click')">Create New Product</a>
+</p>
+
+<table id="productsTable" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+                <td>$@product.Price</td>
+                <td>@product.Stock</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="editProduct(@product.Id)">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(@product.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Inline Script for DataTable initialization -->
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with inline configuration
+        $('#productsTable').DataTable({
+            "processing": true,
+            "pageLength": 10,
+            "order": [[0, "asc"]],
+            "columnDefs": [
+                { "orderable": false, "targets": 4 }
+            ],
+            "language": {
+                "search": "Search products:",
+                "lengthMenu": "Show _MENU_ products per page"
+            }
+        });
+    });
+
+    // Inline functions for product actions
+    function editProduct(id) {
+        window.location.href = '@Url.Action("Edit", "Products")/' + id;
+    }
+
+    function deleteProduct(id) {
+        if (confirm('Are you sure you want to delete product ' + id + '?')) {
+            $.ajax({
+                url: '@Url.Action("DeleteProduct", "Products")',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Product deleted successfully');
+                        location.reload();
+                    } else {
+                        alert('Error deleting product');
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while deleting the product');
+                }
+            });
+        }
+    }
+
+    // Analytics tracking (inline)
+    function trackEvent(eventName) {
+        // Simulate analytics tracking
+        console.log('Tracking event:', eventName);
+        if (typeof gtag !== 'undefined') {
+            gtag('event', eventName);
+        }
+    }
+</script>
+
+<!-- Inline Styles -->
+<style>
+    #productsTable {
+        margin-top: 20px;
+    }
+    
+    .btn {
+        margin-right: 5px;
+    }
+    
+    table.dataTable thead th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+</style>
+

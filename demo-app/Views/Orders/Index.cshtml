@@ -1,0 +1,159 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewBag.Title = "Orders";
+}
+
+<h2>Order Management</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <table id="ordersTable" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr data-order-id="@order.Id">
+                        <td>@order.Id</td>
+                        <td>@order.CustomerName</td>
+                        <td>$@order.Total</td>
+                        <td>
+                            <span class="status-badge status-@order.Status.ToLower()">@order.Status</span>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", new { id = order.Id })" class="btn btn-sm btn-info">View</a>
+                            <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(@order.Id, 'Processing')">Process</button>
+                            <button class="btn btn-sm btn-success" onclick="updateOrderStatus(@order.Id, 'Shipped')">Ship</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Inline DataTable and Status Update Scripts -->
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with complex configuration
+        var table = $('#ordersTable').DataTable({
+            "processing": true,
+            "serverSide": false,
+            "pageLength": 25,
+            "order": [[0, "desc"]],
+            "columnDefs": [
+                { "orderable": false, "targets": 4 },
+                { "type": "num", "targets": 0 },
+                { "type": "currency", "targets": 2 }
+            ],
+            "drawCallback": function(settings) {
+                // Inline callback
+                console.log('Table redrawn');
+                updateStatusColors();
+            }
+        });
+        
+        // Row click handler
+        $('#ordersTable tbody').on('click', 'tr', function() {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+    
+    function updateOrderStatus(orderId, newStatus) {
+        if (!confirm('Change order ' + orderId + ' status to ' + newStatus + '?')) {
+            return;
+        }
+        
+        $.ajax({
+            url: '@Url.Action("UpdateStatus", "Orders")',
+            type: 'POST',
+            data: { id: orderId, status: newStatus },
+            success: function(response) {
+                if (response.success) {
+                    // Update UI inline
+                    var row = $('tr[data-order-id="' + orderId + '"]');
+                    var statusCell = row.find('.status-badge');
+                    statusCell.removeClass().addClass('status-badge status-' + newStatus.toLowerCase());
+                    statusCell.text(newStatus);
+                    
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('Error updating order status');
+            }
+        });
+    }
+    
+    function updateStatusColors() {
+        $('.status-badge').each(function() {
+            var status = $(this).text().toLowerCase();
+            var color = getStatusColor(status);
+            $(this).css('background-color', color);
+        });
+    }
+    
+    function getStatusColor(status) {
+        var colors = {
+            'pending': '#ffc107',
+            'processing': '#17a2b8',
+            'shipped': '#28a745',
+            'delivered': '#6c757d',
+            'cancelled': '#dc3545'
+        };
+        return colors[status] || '#6c757d';
+    }
+</script>
+
+<!-- Inline Styles for Orders -->
+<style>
+    #ordersTable {
+        margin-top: 20px;
+    }
+    
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 3px;
+        color: white;
+        font-weight: bold;
+        font-size: 0.875em;
+    }
+    
+    .status-pending {
+        background-color: #ffc107;
+    }
+    
+    .status-processing {
+        background-color: #17a2b8;
+    }
+    
+    .status-shipped {
+        background-color: #28a745;
+    }
+    
+    .status-delivered {
+        background-color: #6c757d;
+    }
+    
+    table.dataTable tbody tr.selected {
+        background-color: #b3d9ff;
+    }
+    
+    .btn-sm {
+        margin-right: 3px;
+    }
+</style>
+

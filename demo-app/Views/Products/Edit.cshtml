@@ -1,0 +1,101 @@
+@{
+    ViewBag.Title = "Edit Product";
+    var productId = ViewBag.ProductId ?? 0;
+}
+
+<h2>Edit Product #@productId</h2>
+
+<form id="editProductForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="ProductId" name="ProductId" value="@productId" />
+    
+    <div class="form-group">
+        <label for="Name">Product Name</label>
+        <input type="text" class="form-control" id="Name" name="Name" value="Sample Product" />
+    </div>
+    
+    <div class="form-group">
+        <label for="Price">Price</label>
+        <input type="number" class="form-control" id="Price" name="Price" value="29.99" step="0.01" />
+    </div>
+    
+    <div class="form-group">
+        <label for="Stock">Stock Quantity</label>
+        <input type="number" class="form-control" id="Stock" name="Stock" value="100" />
+    </div>
+    
+    <button type="submit" class="btn btn-primary" onclick="saveProduct(event)">Save Changes</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+</form>
+
+<!-- Inline AJAX Script -->
+<script>
+    function saveProduct(event) {
+        event.preventDefault();
+        
+        var formData = {
+            id: document.getElementById('ProductId').value,
+            name: document.getElementById('Name').value,
+            price: document.getElementById('Price').value,
+            stock: document.getElementById('Stock').value
+        };
+        
+        // AJAX call with inline success/error handlers
+        $.ajax({
+            url: '@Url.Action("UpdateProduct", "Products")',
+            type: 'POST',
+            data: formData,
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function(response) {
+                // Inline success handler
+                if (response.success) {
+                    alert('Product updated successfully!');
+                    window.location.href = '@Url.Action("Index")';
+                } else {
+                    alert('Error: ' + (response.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                // Inline error handler
+                var errorMessage = 'An error occurred while updating the product.';
+                try {
+                    var response = eval('(' + xhr.responseText + ')');
+                    if (response && response.message) {
+                        errorMessage = response.message;
+                    }
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                }
+                alert(errorMessage);
+            }
+        });
+    }
+    
+    // Auto-save functionality
+    var autoSaveTimer;
+    $('input, textarea').on('input', function() {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(function() {
+            console.log('Auto-saving...');
+            // Simulate auto-save
+        }, 2000);
+    });
+</script>
+
+<style>
+    #editProductForm {
+        max-width: 600px;
+        margin: 20px 0;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .btn {
+        margin-right: 10px;
+    }
+</style>
+

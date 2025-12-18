@@ -1,0 +1,73 @@
+@{
+    ViewBag.Title = "Contact";
+}
+
+<h2>Contact Page - Dynamic Code</h2>
+
+<p>This page demonstrates dynamic code execution that violates CSP policies.</p>
+
+<div class="demo-section">
+    <h3>Dynamic Code Examples</h3>
+    
+    <button id="evalBtn">Test eval()</button>
+    <button id="functionBtn">Test Function()</button>
+    <button id="setTimeoutBtn">Test setTimeout with string</button>
+    
+    <div id="output"></div>
+</div>
+
+<!-- Inline Script with eval() and Function() violations -->
+<script>
+    $(document).ready(function() {
+        // Violation: eval() usage
+        $('#evalBtn').on('click', function() {
+            var data = '{"name": "John", "age": 30}';
+            try {
+                var obj = eval('(' + data + ')');
+                $('#output').html('<p>Eval result: ' + obj.name + ', Age: ' + obj.age + '</p>');
+            } catch (e) {
+                console.error('Eval error:', e);
+            }
+        });
+        
+        // Violation: Function() constructor
+        $('#functionBtn').on('click', function() {
+            var addFunction = new Function('a', 'b', 'return a + b');
+            var result = addFunction(5, 3);
+            $('#output').html('<p>Function() result: 5 + 3 = ' + result + '</p>');
+        });
+        
+        // Violation: setTimeout with string (implicit eval)
+        $('#setTimeoutBtn').on('click', function() {
+            setTimeout("console.log('This uses eval!'); alert('setTimeout with string');", 1000);
+        });
+        
+        // Another eval example - parsing JSON (bad practice)
+        var jsonString = '{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}';
+        var parsed = eval('(' + jsonString + ')');
+        console.log('Parsed users:', parsed);
+    });
+</script>
+
+<style>
+    .demo-section {
+        padding: 20px;
+        border: 1px solid #ddd;
+        margin: 20px 0;
+    }
+    
+    #output {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        min-height: 50px;
+    }
+    
+    button {
+        margin: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+</style>
+

@@ -1,0 +1,81 @@
+@{
+    var userName = ViewBag.UserName ?? "Guest";
+    var userEmail = ViewBag.UserEmail ?? "guest@example.com";
+}
+
+<div class="user-profile" onload="loadUserProfile()">
+    <div class="profile-header">
+        <img src="/Content/default-avatar.png" alt="Avatar" onerror="handleImageError(this)" />
+        <h4>@userName</h4>
+        <p>@userEmail</p>
+    </div>
+    <div class="profile-actions">
+        <button class="btn btn-sm btn-primary" onclick="editProfile()">Edit Profile</button>
+        <button class="btn btn-sm btn-secondary" onclick="viewSettings()">Settings</button>
+        <button class="btn btn-sm btn-danger" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+    function loadUserProfile() {
+        console.log('Loading user profile...');
+        // Simulate loading user data
+        var userData = {
+            name: '@userName',
+            email: '@userEmail',
+            lastLogin: new Date().toISOString()
+        };
+        console.log('User data:', userData);
+    }
+    
+    function editProfile() {
+        alert('Edit profile functionality would go here');
+    }
+    
+    function viewSettings() {
+        alert('Settings page would open here');
+    }
+    
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            window.location.href = '/Account/Logout';
+        }
+    }
+    
+    function handleImageError(img) {
+        img.src = '/Content/placeholder-avatar.png';
+        console.log('Avatar image failed to load, using placeholder');
+    }
+</script>
+
+<style>
+    .user-profile {
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    
+    .profile-header {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .profile-header img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid #007bff;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
+    
+    .profile-actions .btn {
+        flex: 1;
+    }
+</style>
+

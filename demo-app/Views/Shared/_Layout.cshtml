@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CSPGuardian Demo</title>
+    
+    <!-- External stylesheet (good practice) -->
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("CSPGuardian Demo", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        @Html.Partial("_Footer")
+    </div>
+
+    <!-- External scripts (good practice) -->
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    
+    <!-- Inline Script Violation in Layout -->
+    <script>
+        // Global initialization
+        $(document).ready(function() {
+            console.log('Layout loaded');
+            
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    
+    <!-- Inline Style Violation in Layout -->
+    <style>
+        body {
+            padding-top: 50px;
+        }
+        
+        .navbar {
+            margin-bottom: 0;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+

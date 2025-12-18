@@ -1,0 +1,208 @@
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<h2>Admin Dashboard</h2>
+
+<div class="dashboard-container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-card" onmouseover="highlightCard(this)" onmouseout="unhighlightCard(this)">
+                <h3>Total Users</h3>
+                <p class="stat-value" id="userCount">@ViewBag.UserCount</p>
+                <button onclick="refreshUserCount()">Refresh</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card" onmouseover="highlightCard(this)" onmouseout="unhighlightCard(this)">
+                <h3>Total Orders</h3>
+                <p class="stat-value" id="orderCount">@ViewBag.OrderCount</p>
+                <button onclick="refreshOrderCount()">Refresh</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card" onmouseover="highlightCard(this)" onmouseout="unhighlightCard(this)">
+                <h3>Revenue</h3>
+                <p class="stat-value" id="revenue">$@ViewBag.Revenue.ToString("N2")</p>
+                <button onclick="refreshRevenue()">Refresh</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-12">
+            <h3>Statistics Chart</h3>
+            <canvas id="statsChart" width="400" height="200" onload="initializeChart()"></canvas>
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-12">
+            <h3>Recent Activity</h3>
+            <div id="activityFeed">
+                <p>Loading activity...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inline Scripts for Dashboard -->
+<script>
+    $(document).ready(function() {
+        loadStatistics();
+        setInterval(loadStatistics, 30000); // Refresh every 30 seconds
+    });
+    
+    function loadStatistics() {
+        $.ajax({
+            url: '@Url.Action("GetStatistics", "Admin")',
+            type: 'POST',
+            success: function(response) {
+                // Update stats with inline handlers
+                updateDashboard(response);
+            },
+            error: function() {
+                console.error('Error loading statistics');
+            }
+        });
+    }
+    
+    function updateDashboard(stats) {
+        // Using eval for dynamic property access (BAD - for demo)
+        var userStats = eval('stats.users');
+        document.getElementById('userCount').textContent = userStats.total;
+        
+        var orderStats = eval('stats.orders');
+        document.getElementById('orderCount').textContent = orderStats.total;
+        
+        var revenueStats = eval('stats.revenue');
+        document.getElementById('revenue').textContent = '$' + revenueStats.month.toFixed(2);
+        
+        // Update activity feed
+        updateActivityFeed(stats);
+    }
+    
+    function updateActivityFeed(stats) {
+        var feed = document.getElementById('activityFeed');
+        var activities = [
+            'New user registered',
+            'Order #' + (stats.orders.total - stats.orders.pending) + ' completed',
+            'Revenue updated: $' + stats.revenue.today.toFixed(2)
+        ];
+        
+        feed.innerHTML = '<ul>';
+        activities.forEach(function(activity) {
+            feed.innerHTML += '<li>' + activity + '</li>';
+        });
+        feed.innerHTML += '</ul>';
+    }
+    
+    function refreshUserCount() {
+        loadStatistics();
+    }
+    
+    function refreshOrderCount() {
+        loadStatistics();
+    }
+    
+    function refreshRevenue() {
+        loadStatistics();
+    }
+    
+    function highlightCard(card) {
+        card.style.transform = 'scale(1.05)';
+        card.style.transition = 'transform 0.3s';
+    }
+    
+    function unhighlightCard(card) {
+        card.style.transform = 'scale(1)';
+    }
+    
+    function initializeChart() {
+        // Simulate chart initialization
+        var canvas = document.getElementById('statsChart');
+        var ctx = canvas.getContext('2d');
+        
+        // Simple bar chart
+        ctx.fillStyle = '#007bff';
+        ctx.fillRect(50, 150, 50, 50);
+        ctx.fillRect(120, 100, 50, 100);
+        ctx.fillRect(190, 80, 50, 120);
+        ctx.fillRect(260, 120, 50, 80);
+    }
+    
+    // Dynamic script loading (violation)
+    function loadExternalScript(url) {
+        var script = document.createElement('script');
+        script.src = url;
+        script.onload = function() {
+            console.log('Script loaded:', url);
+        };
+        script.onerror = function() {
+            console.error('Error loading script:', url);
+        };
+        document.head.appendChild(script);
+    }
+    
+    // setTimeout with string (violation)
+    setTimeout("console.log('Dashboard initialized'); loadExternalScript('/Scripts/chart.js');", 1000);
+</script>
+
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+    
+    .stat-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.2em;
+    }
+    
+    .stat-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+    
+    .stat-card button {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid white;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .stat-card button:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    #statsChart {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    
+    #activityFeed ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    #activityFeed li {
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-left: 3px solid #007bff;
+    }
+</style>
+

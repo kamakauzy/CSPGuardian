@@ -1,0 +1,137 @@
+@{
+    ViewBag.Title = "Order Details";
+    var orderId = ViewBag.OrderId ?? 0;
+}
+
+<h2>Order #@orderId Details</h2>
+
+<div class="order-details">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> <span id="customerName">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="customerEmail">Loading...</span></p>
+            <p><strong>Phone:</strong> <span id="customerPhone">Loading...</span></p>
+        </div>
+        <div class="col-md-6">
+            <h3>Order Information</h3>
+            <p><strong>Order Date:</strong> <span id="orderDate">Loading...</span></p>
+            <p><strong>Total:</strong> <span id="orderTotal">Loading...</span></p>
+            <p><strong>Status:</strong> <span id="orderStatus">Loading...</span></p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Order Items</h3>
+            <table id="orderItemsTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="orderItemsBody">
+                    <tr><td colspan="4">Loading items...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Inline Script for Loading Order Data -->
+<script>
+    $(document).ready(function() {
+        loadOrderDetails(@orderId);
+    });
+    
+    function loadOrderDetails(orderId) {
+        // Simulate loading order data with eval (BAD PRACTICE - for demo only)
+        var mockData = '{"customer":{"name":"John Doe","email":"john@example.com","phone":"555-1234"},"order":{"date":"2024-01-15","total":129.99,"status":"Shipped"},"items":[{"product":"Widget A","quantity":2,"price":29.99,"subtotal":59.98},{"product":"Widget B","quantity":1,"price":69.99,"subtotal":69.99}]}';
+        
+        try {
+            // Using eval to parse (violation)
+            var orderData = eval('(' + mockData + ')');
+            
+            // Populate customer info
+            document.getElementById('customerName').textContent = orderData.customer.name;
+            document.getElementById('customerEmail').textContent = orderData.customer.email;
+            document.getElementById('customerPhone').textContent = orderData.customer.phone;
+            
+            // Populate order info
+            document.getElementById('orderDate').textContent = orderData.order.date;
+            document.getElementById('orderTotal').textContent = '$' + orderData.order.total.toFixed(2);
+            document.getElementById('orderStatus').textContent = orderData.order.status;
+            
+            // Populate items
+            var tbody = document.getElementById('orderItemsBody');
+            tbody.innerHTML = '';
+            orderData.items.forEach(function(item) {
+                var row = document.createElement('tr');
+                row.innerHTML = '<td>' + item.product + '</td>' +
+                               '<td>' + item.quantity + '</td>' +
+                               '<td>$' + item.price.toFixed(2) + '</td>' +
+                               '<td>$' + item.subtotal.toFixed(2) + '</td>';
+                tbody.appendChild(row);
+            });
+        } catch (e) {
+            console.error('Error loading order details:', e);
+            alert('Error loading order details');
+        }
+    }
+    
+    // Print functionality
+    function printOrder() {
+        window.print();
+    }
+    
+    // Export functionality
+    function exportOrder() {
+        var orderData = {
+            orderId: @orderId,
+            customer: document.getElementById('customerName').textContent,
+            total: document.getElementById('orderTotal').textContent
+        };
+        
+        // Using Function constructor (violation)
+        var exportFunction = new Function('data', 'return JSON.stringify(data, null, 2)');
+        var json = exportFunction(orderData);
+        
+        // Create download link
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'order-' + @orderId + '.json';
+        a.click();
+    }
+</script>
+
+<style>
+    .order-details {
+        margin-top: 20px;
+    }
+    
+    .order-details h3 {
+        margin-top: 20px;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+    
+    .order-details p {
+        margin: 10px 0;
+    }
+    
+    #orderItemsTable {
+        margin-top: 15px;
+    }
+    
+    .col-md-6 {
+        padding: 15px;
+    }
+</style>
+

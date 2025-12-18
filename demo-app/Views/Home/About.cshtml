@@ -1,0 +1,90 @@
+@{
+    ViewBag.Title = "About";
+}
+
+<h2>About Page - Event Handlers</h2>
+
+<p>This page demonstrates inline event handlers that violate CSP policies.</p>
+
+<!-- Event Handler Violations -->
+<div class="demo-section">
+    <h3>Event Handler Examples</h3>
+    
+    <button onclick="handleClick()">Click Me (onclick)</button>
+    <button onmouseover="handleMouseOver()">Hover Me (onmouseover)</button>
+    <button onfocus="handleFocus()">Focus Me (onfocus)</button>
+    
+    <form onsubmit="validateForm(event)">
+        <input type="text" name="username" placeholder="Username" />
+        <input type="password" name="password" placeholder="Password" />
+        <button type="submit">Login</button>
+    </form>
+    
+    <div onload="initializePage()">
+        <p>This div has an onload handler (though it won't fire for divs)</p>
+    </div>
+    
+    <img src="/Content/placeholder.jpg" onerror="handleImageError()" alt="Placeholder" />
+</div>
+
+<!-- Inline Script for event handlers -->
+<script>
+    function handleClick() {
+        alert('Button was clicked!');
+        console.log('Click event handled');
+    }
+    
+    function handleMouseOver() {
+        console.log('Mouse over event');
+    }
+    
+    function handleFocus() {
+        console.log('Focus event');
+    }
+    
+    function validateForm(event) {
+        event.preventDefault();
+        var username = document.querySelector('input[name="username"]').value;
+        var password = document.querySelector('input[name="password"]').value;
+        
+        if (!username || !password) {
+            alert('Please fill in all fields');
+            return false;
+        }
+        
+        alert('Form is valid!');
+        return true;
+    }
+    
+    function initializePage() {
+        console.log('Page initialized');
+    }
+    
+    function handleImageError() {
+        console.log('Image failed to load');
+    }
+</script>
+
+<style>
+    .demo-section {
+        padding: 20px;
+        border: 1px solid #ddd;
+        margin: 20px 0;
+    }
+    
+    button {
+        margin: 5px;
+        padding: 10px 15px;
+    }
+    
+    form {
+        margin-top: 15px;
+    }
+    
+    input {
+        display: block;
+        margin: 5px 0;
+        padding: 5px;
+    }
+</style>
+
