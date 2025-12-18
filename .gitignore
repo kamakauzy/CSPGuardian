@@ -72,3 +72,8 @@ report.*
 *.script*.js
 *.style*.css
 
+# Test and demo files (should not be committed)
+test-repos/
+demo-app/
+*.test.*
+test-*
