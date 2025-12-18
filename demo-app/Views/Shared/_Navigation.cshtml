@@ -27,7 +27,6 @@
 <script>
     function trackNavigation(page) {
         // Analytics tracking
-        console.log('Navigation to:', page);
         if (typeof gtag !== 'undefined') {
             gtag('event', 'page_view', {
                 'page_title': page,

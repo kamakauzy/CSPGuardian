@@ -51,10 +51,12 @@
             success: function(response) {
                 // Inline success handler
                 if (response.success) {
-                    alert('Product updated successfully!');
-                    window.location.href = '@Url.Action("Index")';
+                    showNotification('Product updated successfully!', 'success');
+                    setTimeout(function() {
+                        window.location.href = '@Url.Action("Index")';
+                    }, 1500);
                 } else {
-                    alert('Error: ' + (response.message || 'Unknown error'));
+                    showNotification('Error: ' + (response.message || 'Unknown error'), 'error');
                 }
             },
             error: function(xhr, status, error) {
@@ -66,9 +68,9 @@
                         errorMessage = response.message;
                     }
                 } catch (e) {
-                    console.error('Error parsing response:', e);
+                    // Silent error handling
                 }
-                alert(errorMessage);
+                showNotification(errorMessage, 'error');
             }
         });
     }
@@ -78,10 +80,20 @@
     $('input, textarea').on('input', function() {
         clearTimeout(autoSaveTimer);
         autoSaveTimer = setTimeout(function() {
-            console.log('Auto-saving...');
-            // Simulate auto-save
+            // Simulate auto-save (silent)
         }, 2000);
     });
+    
+    // Notification helper
+    function showNotification(message, type) {
+        var notification = $('<div class="notification notification-' + type + '">' + message + '</div>');
+        $('body').append(notification);
+        setTimeout(function() {
+            notification.fadeOut(function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
 </script>
 
 <style>

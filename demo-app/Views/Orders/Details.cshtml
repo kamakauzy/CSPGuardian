@@ -77,8 +77,8 @@
                 tbody.appendChild(row);
             });
         } catch (e) {
-            console.error('Error loading order details:', e);
-            alert('Error loading order details');
+            // Silent error handling - show loading error state
+            document.getElementById('orderItemsBody').innerHTML = '<tr><td colspan="4" style="color: red;">Unable to load order items</td></tr>';
         }
     }
     
@@ -106,6 +106,13 @@
         a.href = url;
         a.download = 'order-' + @orderId + '.json';
         a.click();
+        
+        // Show success indicator
+        var btn = event.target;
+        btn.textContent = 'Exported!';
+        setTimeout(function() {
+            btn.textContent = 'Export';
+        }, 2000);
     }
 </script>
 

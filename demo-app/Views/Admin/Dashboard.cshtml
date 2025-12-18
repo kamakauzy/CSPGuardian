@@ -62,7 +62,7 @@
                 updateDashboard(response);
             },
             error: function() {
-                console.error('Error loading statistics');
+                // Silent error - stats remain unchanged
             }
         });
     }
@@ -136,16 +136,16 @@
         var script = document.createElement('script');
         script.src = url;
         script.onload = function() {
-            console.log('Script loaded:', url);
+            // Script loaded successfully
         };
         script.onerror = function() {
-            console.error('Error loading script:', url);
+            // Silent error handling
         };
         document.head.appendChild(script);
     }
     
     // setTimeout with string (violation)
-    setTimeout("console.log('Dashboard initialized'); loadExternalScript('/Scripts/chart.js');", 1000);
+    setTimeout("loadExternalScript('/Scripts/chart.js');", 1000);
 </script>
 
 <style>

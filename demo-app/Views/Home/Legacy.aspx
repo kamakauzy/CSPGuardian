@@ -7,15 +7,16 @@
     
     <!-- Inline Script in Web Forms -->
     <script type="text/javascript">
-        function legacyFunction() {
-            alert('This is a legacy Web Forms page');
-            
-            // Access ViewState (simulated)
-            var viewState = document.getElementById('__VIEWSTATE');
-            if (viewState) {
-                console.log('ViewState found');
-            }
+    function legacyFunction() {
+        // Legacy function - update UI
+        var btn = document.getElementById('<%= btnLegacy.ClientID %>');
+        if (btn) {
+            btn.style.backgroundColor = '#28a745';
+            setTimeout(function() {
+                btn.style.backgroundColor = '';
+            }, 1000);
         }
+    }
         
         // Simulate WebResource.axd reference
         function loadWebResource() {
@@ -53,7 +54,6 @@
     <!-- Event Handler in Web Forms -->
     <script type="text/javascript">
         window.onload = function() {
-            console.log('Legacy page loaded');
             loadWebResource();
         };
     </script>

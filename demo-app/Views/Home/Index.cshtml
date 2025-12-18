@@ -42,8 +42,6 @@
 <!-- Inline Script Violation #1 -->
 <script>
     $(document).ready(function() {
-        console.log('Page loaded');
-        
         // Initialize DataTable
         $('#dataTable').DataTable({
             "processing": true,
@@ -61,7 +59,11 @@
         
         // Button click handler
         $('#btnTest').on('click', function() {
-            alert('Button clicked!');
+            // Update UI instead of alert
+            $(this).text('Clicked!').addClass('btn-success');
+            setTimeout(function() {
+                $('#btnTest').text('Test Button').removeClass('btn-success');
+            }, 2000);
         });
         
         // Form validation
@@ -71,12 +73,15 @@
             var email = $('input[name="email"]').val();
             
             if (!name || !email) {
-                alert('Please fill in all fields');
+                // Show inline error instead of alert
+                if (!$('#formError').length) {
+                    $(this).prepend('<div id="formError" style="color: red; margin-bottom: 10px;">Please fill in all fields</div>');
+                }
                 return false;
             }
             
-            // Simulate form submission
-            console.log('Form submitted:', { name: name, email: email });
+            // Simulate form submission - show success message
+            $(this).html('<div style="color: green; padding: 10px;">Form submitted successfully!</div>');
         });
     });
 </script>

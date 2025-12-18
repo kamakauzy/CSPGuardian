@@ -39,13 +39,13 @@
         
         // Violation: setTimeout with string (implicit eval)
         $('#setTimeoutBtn').on('click', function() {
-            setTimeout("console.log('This uses eval!'); alert('setTimeout with string');", 1000);
+            setTimeout("document.getElementById('output').innerHTML += '<p>Action executed</p>';", 1000);
         });
         
         // Another eval example - parsing JSON (bad practice)
         var jsonString = '{"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}';
         var parsed = eval('(' + jsonString + ')');
-        console.log('Parsed users:', parsed);
+        // Use parsed data silently
     });
 </script>
 

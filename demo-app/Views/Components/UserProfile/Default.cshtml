@@ -18,22 +18,15 @@
 
 <script>
     function loadUserProfile() {
-        console.log('Loading user profile...');
-        // Simulate loading user data
-        var userData = {
-            name: '@userName',
-            email: '@userEmail',
-            lastLogin: new Date().toISOString()
-        };
-        console.log('User data:', userData);
+        // Silent profile loading
     }
     
     function editProfile() {
-        alert('Edit profile functionality would go here');
+        window.location.href = '/Account/Edit';
     }
     
     function viewSettings() {
-        alert('Settings page would open here');
+        window.location.href = '/Account/Settings';
     }
     
     function logout() {
@@ -44,7 +37,6 @@
     
     function handleImageError(img) {
         img.src = '/Content/placeholder-avatar.png';
-        console.log('Avatar image failed to load, using placeholder');
     }
 </script>
 

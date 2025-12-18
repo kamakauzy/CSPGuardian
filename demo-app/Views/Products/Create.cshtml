@@ -64,8 +64,11 @@
         // Stock validation
         var stockNum = parseInt(stock);
         if (isNaN(stockNum) || stockNum < 0) {
-            alert('Stock must be a non-negative integer');
+            var stockInput = document.getElementById('Stock');
+            stockInput.style.borderColor = 'red';
             isValid = false;
+        } else {
+            document.getElementById('Stock').style.borderColor = '';
         }
         
         if (!isValid) {

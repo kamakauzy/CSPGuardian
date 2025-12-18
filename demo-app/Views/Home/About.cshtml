@@ -30,16 +30,19 @@
 <!-- Inline Script for event handlers -->
 <script>
     function handleClick() {
-        alert('Button was clicked!');
-        console.log('Click event handled');
+        // Update button state
+        event.target.style.opacity = '0.7';
+        setTimeout(function() {
+            event.target.style.opacity = '1';
+        }, 200);
     }
     
     function handleMouseOver() {
-        console.log('Mouse over event');
+        event.target.style.transform = 'scale(1.05)';
     }
     
     function handleFocus() {
-        console.log('Focus event');
+        event.target.style.outline = '2px solid #667eea';
     }
     
     function validateForm(event) {
@@ -48,20 +51,29 @@
         var password = document.querySelector('input[name="password"]').value;
         
         if (!username || !password) {
-            alert('Please fill in all fields');
+            var form = event.target;
+            if (!form.querySelector('.error-message')) {
+                var error = document.createElement('div');
+                error.className = 'error-message';
+                error.style.color = 'red';
+                error.style.marginTop = '10px';
+                error.textContent = 'Please fill in all fields';
+                form.appendChild(error);
+            }
             return false;
         }
         
-        alert('Form is valid!');
+        // Show success state
+        event.target.style.border = '2px solid green';
         return true;
     }
     
     function initializePage() {
-        console.log('Page initialized');
+        // Silent initialization
     }
     
     function handleImageError() {
-        console.log('Image failed to load');
+        // Silent error handling - placeholder already set
     }
 </script>
 
