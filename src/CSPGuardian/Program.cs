@@ -6,47 +6,54 @@ var rootCommand = new RootCommand("CSPGuardian - A tool to aid .NET/C# developer
 
 var scanCommand = new Command("scan", "Scan codebase for CSP violations");
 
-var pathOption = new Option<string>(
-    aliases: new[] { "--path", "-p" },
-    description: "Path to the directory to scan")
+var pathOption = new Option<string>(new[] { "--path", "-p" })
 {
+    Description = "Path to the directory to scan",
     IsRequired = true
 };
 
 var frameworkOption = new Option<string>(
-    aliases: new[] { "--framework", "-f" },
-    description: "Framework type: modern-dotnet, legacy-dotnet, static, js-modern, js-legacy",
-    getDefaultValue: () => "modern-dotnet");
+    new[] { "--framework", "-f" },
+    getDefaultValue: () => "modern-dotnet")
+{
+    Description = "Framework type: modern-dotnet, legacy-dotnet, static, js-modern, js-legacy"
+};
 
 var cleanupOption = new Option<string>(
-    aliases: new[] { "--cleanup", "-c" },
-    description: "Cleanup strategy: externalize, hash, nonce, or none",
-    getDefaultValue: () => "none");
+    new[] { "--cleanup", "-c" },
+    getDefaultValue: () => "none")
+{
+    Description = "Cleanup strategy: externalize, hash, nonce, or none"
+};
 
 var outputOption = new Option<string>(
-    aliases: new[] { "--output", "-o" },
-    description: "Output file path for CSP policy (default: policy.csp)",
-    getDefaultValue: () => "policy.csp");
+    new[] { "--output", "-o" },
+    getDefaultValue: () => "policy.csp")
+{
+    Description = "Output file path for CSP policy (default: policy.csp)"
+};
 
-var dryRunOption = new Option<bool>(
-    aliases: new[] { "--dry-run" },
-    description: "Perform a dry run without making changes",
-    getDefaultValue: () => false);
+var dryRunOption = new Option<bool>(new[] { "--dry-run" })
+{
+    Description = "Perform a dry run without making changes"
+};
 
-var legacyModeOption = new Option<bool>(
-    aliases: new[] { "--legacy-mode" },
-    description: "Enable legacy .NET mode (MVC 4/Web Forms)",
-    getDefaultValue: () => false);
+var legacyModeOption = new Option<bool>(new[] { "--legacy-mode" })
+{
+    Description = "Enable legacy .NET mode (MVC 4/Web Forms)"
+};
 
-var ciModeOption = new Option<bool>(
-    aliases: new[] { "--ci-mode" },
-    description: "CI/CD mode: exit with error code if violations found",
-    getDefaultValue: () => false);
+var ciModeOption = new Option<bool>(new[] { "--ci-mode" })
+{
+    Description = "CI/CD mode: exit with error code if violations found"
+};
 
 var reportFormatOption = new Option<string>(
-    aliases: new[] { "--report-format", "-r" },
-    description: "Report format: json, csv, md",
-    getDefaultValue: () => "md");
+    new[] { "--report-format", "-r" },
+    getDefaultValue: () => "md")
+{
+    Description = "Report format: json, csv, md"
+};
 
 scanCommand.AddOption(pathOption);
 scanCommand.AddOption(frameworkOption);
@@ -57,7 +64,7 @@ scanCommand.AddOption(legacyModeOption);
 scanCommand.AddOption(ciModeOption);
 scanCommand.AddOption(reportFormatOption);
 
-scanCommand.SetHandler(async (path, framework, cleanup, output, dryRun, legacyMode, ciMode, reportFormat) =>
+scanCommand.SetHandler(async (string path, string framework, string cleanup, string output, bool dryRun, bool legacyMode, bool ciMode, string reportFormat) =>
 {
     var options = new ScanOptions
     {
@@ -83,4 +90,3 @@ scanCommand.SetHandler(async (path, framework, cleanup, output, dryRun, legacyMo
 rootCommand.AddCommand(scanCommand);
 
 await rootCommand.InvokeAsync(args);
-

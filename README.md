@@ -71,6 +71,7 @@ Perfect for pentest handoffs, compliance audits, or just showing your boss you c
 
 ### Prerequisites
 - .NET 8.0 SDK or later (because we're modern like that)
+- Uses the `System.CommandLine` prerelease package (beta4+); if restore fails, run `dotnet add package System.CommandLine --prerelease`
 
 ### Installation
 
@@ -80,11 +81,35 @@ git clone https://github.com/kamakauzy/CSPGuardian.git
 cd CSPGuardian
 
 # Build it
+dotnet restore
 dotnet build
 
 # Publish it (optional, but recommended)
 dotnet publish -c Release
 ```
+
+## Live Demo: Testing on AspGoat
+
+See [DEMO_GUIDE.md](DEMO_GUIDE.md) for a complete step-by-step walkthrough of using CSPGuardian on [AspGoat](https://github.com/Soham7-dev/AspGoat), an intentionally vulnerable ASP.NET Core application from the OWASP project.
+
+**Quick Demo Commands:**
+
+```bash
+# Clone AspGoat (OWASP educational app)
+git clone https://github.com/Soham7-dev/AspGoat.git
+
+# Scan for violations
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path AspGoat --framework modern-dotnet --cleanup none
+
+# Apply externalize cleanup
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path AspGoat --framework modern-dotnet --cleanup externalize
+
+# Results: 214 violations detected and fixed across 55 files!
+```
+
+**Credits**: This demo uses [AspGoat](https://github.com/Soham7-dev/AspGoat) by Soham7-dev, part of the [OWASP project](https://owasp.org/www-project-aspgoat/). AspGoat is intentionally vulnerable for educational purposes.
 
 ## Usage Examples
 
@@ -179,6 +204,11 @@ Because sometimes you have to work with what you've got.
 cspguard scan --path ./app --ci-mode --report-format json
 ```
 Automate security checks in your pipeline. Set it and forget it!
+
+## Documentation
+
+- [DEMO_GUIDE.md](DEMO_GUIDE.md) - Complete walkthrough: Testing CSPGuardian on AspGoat (OWASP)
+- [CLEANUP_GUIDE.md](CLEANUP_GUIDE.md) - Detailed guide on cleanup strategies
 
 ## Contributing
 
