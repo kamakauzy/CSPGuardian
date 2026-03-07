@@ -13,20 +13,17 @@ public class JsAdapter
         _framework = framework;
     }
 
-    /// <summary>
-    /// Process JavaScript files for framework-specific inline patterns
-    /// </summary>
-    public async Task<List<Core.Violation>> ProcessAsync(string filePath, string content)
+    public List<Core.Violation> Process(string filePath, string content)
     {
         var violations = new List<Core.Violation>();
 
         // Modern frameworks: Check for Webpack/Vite inline patterns
-        if (_framework == "js-modern")
+        if (_framework == Core.ScanFrameworks.JsModern)
         {
             violations.AddRange(ScanModernJs(content, filePath));
         }
         // Legacy: Check for jQuery.ready, inline event handlers
-        else if (_framework == "js-legacy")
+        else if (_framework == Core.ScanFrameworks.JsLegacy)
         {
             violations.AddRange(ScanLegacyJs(content, filePath));
         }
@@ -38,14 +35,20 @@ public class JsAdapter
     {
         var violations = new List<Core.Violation>();
 
-        // Check for Webpack inline patterns
-        if (System.Text.RegularExpressions.Regex.IsMatch(content, @"__webpack_require__", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(
+                     content,
+                     @"__webpack_require__",
+                     System.Text.RegularExpressions.RegexOptions.IgnoreCase))
         {
             violations.Add(new Core.Violation
             {
                 FilePath = filePath,
+                LineNumber = Core.Scanner.GetLineNumberFromIndex(content, match.Index),
                 Type = Core.ViolationType.DynamicInline,
                 Content = "Webpack inline pattern detected",
+                OriginalText = match.Value,
+                SourceIndex = match.Index,
+                SourceLength = match.Length,
                 Severity = "low"
             });
         }
@@ -57,14 +60,20 @@ public class JsAdapter
     {
         var violations = new List<Core.Violation>();
 
-        // Check for jQuery.ready with inline code
-        if (System.Text.RegularExpressions.Regex.IsMatch(content, @"\$\(document\)\.ready\s*\([^)]*function", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(
+                     content,
+                     @"\$\(document\)\.ready\s*\([^)]*function",
+                     System.Text.RegularExpressions.RegexOptions.IgnoreCase))
         {
             violations.Add(new Core.Violation
             {
                 FilePath = filePath,
+                LineNumber = Core.Scanner.GetLineNumberFromIndex(content, match.Index),
                 Type = Core.ViolationType.DynamicInline,
                 Content = "jQuery.ready with inline function detected",
+                OriginalText = match.Value,
+                SourceIndex = match.Index,
+                SourceLength = match.Length,
                 Severity = "medium"
             });
         }

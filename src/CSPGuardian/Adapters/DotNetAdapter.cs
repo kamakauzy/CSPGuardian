@@ -19,7 +19,7 @@ public class DotNetAdapter
     /// </summary>
     public string GenerateNonceMiddleware()
     {
-        if (_legacyMode || _framework == "legacy-dotnet")
+        if (_legacyMode || _framework == Core.ScanFrameworks.LegacyDotNet)
         {
             return GenerateLegacyNonceCode();
         }
@@ -54,7 +54,10 @@ app.Use(async (context, next) =>
         return @"// For MVC 4, add to Global.asax.cs Application_BeginRequest:
 protected void Application_BeginRequest(object sender, EventArgs e)
 {
-    var nonce = Convert.ToBase64String(new byte[16]);
+    using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+    var bytes = new byte[16];
+    rng.GetBytes(bytes);
+    var nonce = Convert.ToBase64String(bytes);
     HttpContext.Current.Items[""Nonce""] = nonce;
     Response.AddHeader(""Content-Security-Policy"", 
         $""script-src 'self' 'nonce-{nonce}'; style-src 'self' 'nonce-{nonce}';"");
@@ -72,7 +75,7 @@ protected void Application_BeginRequest(object sender, EventArgs e)
     /// </summary>
     public string GetMigrationSuggestion()
     {
-        if (_legacyMode || _framework == "legacy-dotnet")
+        if (_legacyMode || _framework == Core.ScanFrameworks.LegacyDotNet)
         {
             return @"Legacy .NET Migration Suggestions:
 1. Use BundleConfig to externalize inline scripts

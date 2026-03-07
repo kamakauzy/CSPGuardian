@@ -1,0 +1,102 @@
+@{
+    ViewBag.Title = "About";
+}
+
+<h2>About Page - Event Handlers</h2>
+
+<p>This page demonstrates inline event handlers that violate CSP policies.</p>
+
+<!-- Event Handler Violations -->
+<div class="demo-section">
+    <h3>Event Handler Examples</h3>
+    
+    <button onclick="handleClick()">Click Me (onclick)</button>
+    <button onmouseover="handleMouseOver()">Hover Me (onmouseover)</button>
+    <button onfocus="handleFocus()">Focus Me (onfocus)</button>
+    
+    <form onsubmit="validateForm(event)">
+        <input type="text" name="username" placeholder="Username" />
+        <input type="password" name="password" placeholder="Password" />
+        <button type="submit">Login</button>
+    </form>
+    
+    <div onload="initializePage()">
+        <p>This div has an onload handler (though it won't fire for divs)</p>
+    </div>
+    
+    <img src="/Content/placeholder.jpg" onerror="handleImageError()" alt="Placeholder" />
+</div>
+
+<!-- Inline Script for event handlers -->
+<script>
+    function handleClick() {
+        // Update button state
+        event.target.style.opacity = '0.7';
+        setTimeout(function() {
+            event.target.style.opacity = '1';
+        }, 200);
+    }
+    
+    function handleMouseOver() {
+        event.target.style.transform = 'scale(1.05)';
+    }
+    
+    function handleFocus() {
+        event.target.style.outline = '2px solid #667eea';
+    }
+    
+    function validateForm(event) {
+        event.preventDefault();
+        var username = document.querySelector('input[name="username"]').value;
+        var password = document.querySelector('input[name="password"]').value;
+        
+        if (!username || !password) {
+            var form = event.target;
+            if (!form.querySelector('.error-message')) {
+                var error = document.createElement('div');
+                error.className = 'error-message';
+                error.style.color = 'red';
+                error.style.marginTop = '10px';
+                error.textContent = 'Please fill in all fields';
+                form.appendChild(error);
+            }
+            return false;
+        }
+        
+        // Show success state
+        event.target.style.border = '2px solid green';
+        return true;
+    }
+    
+    function initializePage() {
+        // Silent initialization
+    }
+    
+    function handleImageError() {
+        // Silent error handling - placeholder already set
+    }
+</script>
+
+<style>
+    .demo-section {
+        padding: 20px;
+        border: 1px solid #ddd;
+        margin: 20px 0;
+    }
+    
+    button {
+        margin: 5px;
+        padding: 10px 15px;
+    }
+    
+    form {
+        margin-top: 15px;
+    }
+    
+    input {
+        display: block;
+        margin: 5px 0;
+        padding: 5px;
+    }
+</style>
+

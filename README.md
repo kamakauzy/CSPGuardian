@@ -1,208 +1,164 @@
 # CSPGuardian
 
-Your codebase's security superhero, fighting XSS villains one inline script at a time!
+CSPGuardian is a .NET 8 CLI for finding CSP-hostile patterns in web codebases, planning remediation, and generating starter CSP policies.
 
-Tired of pentesters giving you the side-eye because your CSP policy is basically `script-src 'unsafe-inline' 'unsafe-eval' *`?  
-Worried about that legacy .NET app that's held together with inline scripts and duct tape?  
-Want to actually pass a security audit without rewriting your entire codebase?
+It is aimed at legacy ASP.NET, Razor, static HTML, and JavaScript-heavy projects where inline scripts, inline styles, event handlers, and `javascript:` URLs have accumulated over time.
 
-CSPGuardian is here to save the day!
+## Repository note
 
-A powerful CLI tool that helps .NET/C# developers transform their codebases from CSP-violation nightmares into security-compliant masterpieces. Automatically detect, fix, and generate proper Content Security Policies - because `unsafe-inline` is not a security feature, it's a cry for help.
+The intended primary branch for this repository is `main`. If GitHub still shows `CronosProd` as the default branch, treat that as a repository-settings issue rather than the branch of record.
 
-## What CSPGuardian Does
+## What the tool does today
 
-Think of CSPGuardian as your personal security consultant that:
-- Scans your entire codebase (HTML, Razor, Web Forms, JS, CSS - you name it!)
-- Cleans up inline scripts and styles (externalize, hash, or nonce them)
-- Generates proper CSP policies that actually work
-- Handles legacy .NET without requiring a full rewrite
-- Reports everything in beautiful JSON/CSV/Markdown formats
+- Scans supported files recursively for CSP-relevant findings
+- Detects inline `<script>` and `<style>` blocks
+- Detects inline event handlers such as `onclick`
+- Detects `style="..."` attributes
+- Detects `javascript:` URLs in HTML and CSS
+- Detects `eval()` / `Function(...)` usage in JavaScript
+- Detects legacy .NET patterns such as `WebResource.axd` and ViewState/script combinations
+- Supports three remediation modes:
+  - `hash` - compute CSP hashes for inline `<script>` and `<style>` blocks
+  - `nonce` - generate nonce guidance for inline `<script>` and `<style>` blocks
+  - `externalize` - extract inline `<script>` and `<style>` blocks into `.js` / `.css` files and rewrite the source file
+- Generates Markdown, JSON, or CSV reports
+- Generates a starter CSP policy file
 
-All while keeping your sanity intact!
+## Current limits
 
-## Features That'll Make You Smile
+- Automatic externalization only applies to inline `<script>` and `<style>` blocks.
+- Event handlers, `style` attributes, `javascript:` URLs, and dynamic JavaScript execution are reported with manual remediation guidance.
+- Nonce mode generates guidance and policy placeholders; it does not patch your application runtime for you.
+- The scanner currently targets `.html`, `.htm`, `.cshtml`, `.aspx`, `.ascx`, `.js`, and `.css`.
+- The JavaScript framework modes (`js-modern`, `js-legacy`) add lightweight heuristics; they are not full framework-aware parsers.
 
-### Codebase Scanning
-Recursively hunts down those pesky inline scripts and styles like a bloodhound. Finds:
-- Inline `<script>` tags (the usual suspects)
-- Inline `<style>` tags (sneaky CSS violators)
-- Event handlers (`onclick`, `onload`, etc. - the old-school way)
-- Dynamic code execution (`eval()`, `Function()` - the dangerous stuff)
-- Legacy .NET patterns (WebResource.axd, ViewState shenanigans)
+## Prerequisites
 
-### Cleanup Options (Pick Your Poison)
+- .NET 8 SDK
 
-**Externalize**  
-"Get that script out of my HTML!"  
-Extracts inline content to proper `.js`/`.css` files. Your HTML will thank you.
-
-**Hashing**  
-"Fingerprint everything!"  
-Computes SHA-256/384/512 hashes for CSP whitelisting. Because trust, but verify.
-
-**Noncing**  
-"One-time use only!"  
-Generates per-request nonces with ready-to-use code snippets. Fresh and secure every time.
-
-### CSP Policy Generation
-Builds proper CSP headers that won't make security auditors cry. Includes:
-- `script-src` and `style-src` directives (with hashes/nonces)
-- `strict-dynamic` support (for the modern apps)
-- Report-only mode (for the cautious)
-- Legacy .NET compatibility notes (for the brave)
-
-### Framework Support
-Works with:
-- Modern .NET Core/Blazor (the cool kids)
-- Legacy .NET (MVC 4/Web Forms - we don't judge)
-- Static sites (simple but effective)
-- JS frameworks (React, Angular, Vue - the modern stack)
-
-### Reporting & Auditing
-Generate beautiful reports in:
-- Markdown (for humans)
-- JSON (for machines)
-- CSV (for spreadsheets)
-
-Perfect for pentest handoffs, compliance audits, or just showing your boss you care about security!
-
-## Quick Start
-
-### Prerequisites
-- .NET 8.0 SDK or later (because we're modern like that)
-
-### Installation
+## Build
 
 ```bash
-# Clone the repo
 git clone https://github.com/kamakauzy/CSPGuardian.git
 cd CSPGuardian
-
-# Build it
-dotnet build
-
-# Publish it (optional, but recommended)
-dotnet publish -c Release
+dotnet restore CSPGuardian.sln
+dotnet build CSPGuardian.sln
 ```
 
-## Usage Examples
+## Run
 
-### Basic Scan (The "What Have I Done?" Command)
+Use `dotnet run` from the repo, or run the published binary after `dotnet publish`.
+
 ```bash
-cspguard scan --path ./MyApp --framework modern-dotnet
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./demo-app --framework legacy-dotnet --legacy-mode
 ```
-See what violations you have. Knowledge is power!
 
-### Scan with Hash Cleanup (The "Fix It Now" Command)
+## Common examples
+
+### Basic scan
+
 ```bash
-cspguard scan --path ./MyApp --framework modern-dotnet --cleanup hash --output policy.csp
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./demo-app --framework legacy-dotnet
 ```
-Automatically hash everything and generate a CSP policy. Magic!
 
-### Legacy .NET Mode (The "Help Me, I'm Stuck" Command)
+### Hash inline blocks and emit a JSON report
+
 ```bash
-cspguard scan --path ./LegacyApp --framework legacy-dotnet --legacy-mode --cleanup externalize
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./demo-app-core --framework modern-dotnet \
+  --cleanup hash \
+  --output ./artifacts/policy.csp \
+  --report-format json \
+  --report-output ./artifacts/report.json
 ```
-For those old MVC 4/Web Forms apps that refuse to die. We've got your back!
 
-### CI/CD Mode (The "Break the Build" Command)
+### Externalize inline scripts and styles
+
 ```bash
-cspguard scan --path ./MyApp --ci-mode --report-format json
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./demo-app --framework legacy-dotnet \
+  --cleanup externalize
 ```
-Fail your CI pipeline if violations are found. Because security matters!
 
-### Dry Run (The "Just Looking" Command)
+### Dry run without writing files
+
 ```bash
-cspguard scan --path ./MyApp --cleanup externalize --dry-run
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./demo-app-core --framework modern-dotnet \
+  --cleanup externalize \
+  --dry-run
 ```
-See what would happen without actually doing it. Safety first!
 
-## Command Options
+### Exclude generated folders
+
+```bash
+dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
+  scan --path ./src --framework modern-dotnet \
+  --exclude bin --exclude obj --exclude node_modules
+```
+
+## Command options
 
 | Option | Short | Description |
 |--------|-------|-------------|
-| `--path` | `-p` | Path to scan (required) |
-| `--framework` | `-f` | Framework: `modern-dotnet`, `legacy-dotnet`, `static`, `js-modern`, `js-legacy` |
-| `--cleanup` | `-c` | Strategy: `externalize`, `hash`, `nonce`, or `none` |
-| `--output` | `-o` | Output file for CSP policy (default: `policy.csp`) |
-| `--dry-run` | | Preview changes without applying them |
-| `--legacy-mode` | | Enable legacy .NET mode (MVC 4/Web Forms) |
-| `--ci-mode` | | Exit with error code if violations found |
-| `--report-format` | `-r` | Report format: `json`, `csv`, `md` |
+| `--path` | `-p` | File or directory to scan |
+| `--framework` | `-f` | `modern-dotnet`, `legacy-dotnet`, `static`, `js-modern`, or `js-legacy` |
+| `--cleanup` | `-c` | `none`, `externalize`, `hash`, or `nonce` |
+| `--output` | `-o` | Policy output path. Defaults to `policy.csp` |
+| `--report-format` | `-r` | `md`, `json`, or `csv` |
+| `--report-output` | | Report output path. Defaults to `report.<format>` |
+| `--exclude` | | Directory names or paths to exclude from recursive scans |
+| `--dry-run` | | Preview findings and fixes without writing any files |
+| `--legacy-mode` | | Enable extra legacy .NET scanning |
+| `--ci-mode` | | Exit with a nonzero code when violations are found |
 
-## What You'll Get
+## Default outputs
 
-After running CSPGuardian, you'll find:
-- `policy.csp` - Your shiny new CSP policy (ready to deploy!)
-- `report.md` (or `.json`/`.csv`) - A detailed report of all violations and fixes
+When not running in `--dry-run`, the CLI writes:
 
-## Supported File Types
+- a policy file to `policy.csp` unless `--output` is overridden
+- a report file to `report.<format>` unless `--report-output` is overridden
 
-CSPGuardian can scan:
-- HTML/HTM files
-- CSHTML (Razor views)
-- ASPX (Web Forms - yes, those still exist)
-- ASCX (User Controls)
-- JavaScript files (.js)
-- CSS files (.css)
+## Supported findings
 
-## Violation Types
+| Type | Description |
+|------|-------------|
+| `InlineScript` | Inline `<script>` block without `src` |
+| `InlineStyle` | Inline `<style>` block |
+| `StyleAttribute` | Inline `style="..."` attribute |
+| `EventHandler` | Inline event handler such as `onclick` |
+| `JavaScriptUrl` | `javascript:` URL in HTML or CSS |
+| `DynamicInline` | `eval()` / `Function(...)` usage and lightweight JS-framework heuristics |
+| `LegacyWebResource` | `WebResource.axd` reference |
+| `ViewStateEmbedded` | ViewState/script combination detection |
 
-CSPGuardian detects and reports:
+## Demo content in this repo
 
-| Type | Description | Severity |
-|------|-------------|----------|
-| InlineScript | Inline `<script>` tags without `src` | High |
-| InlineStyle | Inline `<style>` tags | Medium |
-| EventHandler | Event handler attributes (`onclick`, etc.) | High |
-| DynamicInline | Dynamic code (`eval()`, `Function()`) | High |
-| LegacyWebResource | WebResource.axd references | Low |
-| ViewStateEmbedded | ViewState with embedded script | Medium |
+The repository includes intentionally noisy sample applications for exercising the scanner:
 
-## Real-World Examples
+- `demo-app/` - legacy MVC / Web Forms style examples
+- `demo-app-core/` - ASP.NET Core examples
 
-### Example 1: Modern .NET App
+## Testing
+
 ```bash
-cspguard scan --path ./src --framework modern-dotnet --cleanup hash --output csp-policy.txt
+dotnet test tests/CSPGuardian.Tests/CSPGuardian.Tests.csproj
 ```
-Perfect for your shiny new .NET 8 app!
 
-### Example 2: That Old MVC 4 App Nobody Wants to Touch
-```bash
-cspguard scan --path ./LegacyMVC4 --framework legacy-dotnet --legacy-mode --cleanup externalize
-```
-Because sometimes you have to work with what you've got.
+## CI
 
-### Example 3: CI/CD Pipeline Integration
-```bash
-cspguard scan --path ./app --ci-mode --report-format json
-```
-Automate security checks in your pipeline. Set it and forget it!
+GitHub Actions CI is configured to restore, build, and test the solution on pushes and pull requests.
 
 ## Contributing
-
-Found a bug? Have an idea? Want to make CSPGuardian even better?
-
-We'd love your help!
 
 1. Fork the repo
 2. Create a feature branch
 3. Make your changes
-4. Submit a Pull Request
-
-Together, we can make the web a safer place!
+4. Run the targeted test suite
+5. Open a pull request
 
 ## License
 
-MIT License - because security tools should be free and open!
-
-## Version
-
-1.0.0 (MVP) - The first step in your journey to CSP compliance!
-
----
-
-Made with love for developers who care about security (and their sanity)
-
-Remember: `unsafe-inline` is not a feature, it's a temporary solution that became permanent. Let CSPGuardian help you fix that!
+MIT

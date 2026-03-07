@@ -1,4 +1,5 @@
 using System.Text;
+using CSPGuardian.Adapters;
 
 namespace CSPGuardian.Core;
 
@@ -11,11 +12,10 @@ public class PolicyGenerator
         _options = options;
     }
 
-    public async Task<string> GenerateAsync(ScanResult scanResult)
+    public Task<string> GenerateAsync(ScanResult scanResult)
     {
         var policy = new StringBuilder();
-        
-        // Collect hashes and nonces
+
         var scriptHashes = scanResult.Violations
             .Where(v => v.Type == ViolationType.InlineScript && !string.IsNullOrEmpty(v.Hash))
             .Select(v => $"'{v.Hash}'")
@@ -28,63 +28,69 @@ public class PolicyGenerator
             .Distinct()
             .ToList();
 
-        // Build CSP directives
         policy.Append("Content-Security-Policy: ");
-        
-        var directives = new List<string>();
 
-        // script-src
+        var directives = new List<string>();
+        directives.Add("default-src 'self'");
+
         var scriptSrc = new List<string> { "'self'" };
         if (scriptHashes.Any())
         {
             scriptSrc.AddRange(scriptHashes);
         }
-        else if (_options.Cleanup == "nonce")
+        else if (_options.Cleanup == CleanupStrategies.Nonce)
         {
             scriptSrc.Add("'nonce-{nonce}'");
         }
-        else
-        {
-            scriptSrc.Add("'strict-dynamic'");
-        }
+
         directives.Add($"script-src {string.Join(" ", scriptSrc)}");
 
-        // style-src
         var styleSrc = new List<string> { "'self'" };
         if (styleHashes.Any())
         {
             styleSrc.AddRange(styleHashes);
         }
-        else if (_options.Cleanup == "nonce")
+        else if (_options.Cleanup == CleanupStrategies.Nonce)
         {
             styleSrc.Add("'nonce-{nonce}'");
         }
+
         directives.Add($"style-src {string.Join(" ", styleSrc)}");
 
-        // object-src
         directives.Add("object-src 'none'");
-
-        // base-uri
         directives.Add("base-uri 'self'");
-
-        // form-action
         directives.Add("form-action 'self'");
-
-        // frame-ancestors
         directives.Add("frame-ancestors 'none'");
-
-        // upgrade-insecure-requests
         directives.Add("upgrade-insecure-requests");
 
         policy.Append(string.Join("; ", directives));
 
-        if (_options.Framework.Contains("legacy"))
+        var remainingInlineFindings = scanResult.Violations.Count(violation =>
+            violation.Type is ViolationType.InlineScript or ViolationType.InlineStyle or ViolationType.StyleAttribute or ViolationType.EventHandler or ViolationType.JavaScriptUrl);
+
+        if (remainingInlineFindings > 0 && _options.Cleanup == CleanupStrategies.None)
         {
             policy.AppendLine();
-            policy.AppendLine("# Note: Legacy .NET mode - some directives may need adjustment for Web Forms/MVC 4");
+            policy.AppendLine("# Inline findings remain. Use --cleanup hash, --cleanup nonce, or --cleanup externalize before enforcing this policy.");
         }
 
-        return policy.ToString();
+        if (_options.Cleanup == CleanupStrategies.Nonce)
+        {
+            var adapter = new DotNetAdapter(_options.Framework, _options.LegacyMode);
+            policy.AppendLine();
+            policy.AppendLine("# Nonce implementation guidance:");
+            policy.AppendLine(adapter.GenerateNonceMiddleware());
+        }
+
+        if (_options.Framework.Contains("legacy", StringComparison.OrdinalIgnoreCase))
+        {
+            var adapter = new DotNetAdapter(_options.Framework, _options.LegacyMode);
+            policy.AppendLine();
+            policy.AppendLine("# Note: Legacy .NET mode - some directives may need adjustment for Web Forms/MVC 4");
+            policy.AppendLine("# " + adapter.GetMigrationSuggestion().Replace(Environment.NewLine, Environment.NewLine + "# "));
+        }
+
+        return Task.FromResult(policy.ToString());
     }
 }
 

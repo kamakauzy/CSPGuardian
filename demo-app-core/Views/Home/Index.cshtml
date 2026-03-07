@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ASP.NET Core MVC Demo</h1>
+    <p class="lead">Comprehensive demo application for testing CSPGuardian with real-world CSP violations</p>
+    <p><a href="/Products" class="btn btn-primary btn-lg" onclick="trackEvent('home_products_click')">View Products &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Inline Script Example</h2>
+        <p>This page has inline JavaScript that should be externalized or hashed.</p>
+        <button id="btnTest" class="btn btn-default">Test Button</button>
+    </div>
+    <div class="col-md-4">
+        <h2>DataTable Example</h2>
+        <p>Simulating jQuery DataTable with inline initialization.</p>
+        <table id="dataTable" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h2>Form Example</h2>
+        <p>Form with inline validation script.</p>
+        <form id="demoForm">
+            <input type="text" name="name" placeholder="Name" />
+            <input type="email" name="email" placeholder="Email" />
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<!-- Inline Script Violation #1 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded');
+        
+        // Initialize DataTable (if available)
+        if (typeof $ !== 'undefined' && $.fn.DataTable) {
+            $('#dataTable').DataTable({
+                "processing": true,
+                "serverSide": false,
+                "ajax": {
+                    "url": "/Home/GetData",
+                    "type": "GET"
+                },
+                "columns": [
+                    { "data": "id" },
+                    { "data": "name" },
+                    { "data": "email" }
+                ]
+            });
+        }
+        
+        // Button click handler
+        var btnTest = document.getElementById('btnTest');
+        if (btnTest) {
+            btnTest.addEventListener('click', function() {
+                alert('Button clicked!');
+            });
+        }
+        
+        // Form validation
+        var demoForm = document.getElementById('demoForm');
+        if (demoForm) {
+            demoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var name = document.querySelector('input[name="name"]').value;
+                var email = document.querySelector('input[name="email"]').value;
+                
+                if (!name || !email) {
+                    alert('Please fill in all fields');
+                    return false;
+                }
+                
+                console.log('Form submitted:', { name: name, email: email });
+            });
+        }
+    });
+    
+    function trackEvent(eventName) {
+        console.log('Tracking event:', eventName);
+    }
+</script>
+
+<!-- Inline Style Violation #1 -->
+<style>
+    .jumbotron {
+        background-color: #f0f0f0;
+        padding: 30px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+    }
+    
+    .col-md-4 {
+        padding: 15px;
+    }
+    
+    #dataTable {
+        width: 100%;
+    }
+    
+    .btn {
+        margin-top: 10px;
+    }
+</style>
+

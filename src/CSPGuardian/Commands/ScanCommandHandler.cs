@@ -7,24 +7,29 @@ public class ScanCommandHandler
 {
     public async Task<ScanResult> ExecuteAsync(ScanOptions options)
     {
+        options.Normalize();
+
         var scanner = new Scanner(options);
         var scanResult = await scanner.ScanAsync();
 
-        if (options.Cleanup != "none" && !options.DryRun)
+        if (options.Cleanup != CleanupStrategies.None)
         {
             var cleanupEngine = new CleanupEngine(options);
             await cleanupEngine.ProcessAsync(scanResult);
         }
 
-        if (!string.IsNullOrEmpty(options.Output))
+        if (!options.DryRun && !string.IsNullOrWhiteSpace(options.Output))
         {
             var policyGenerator = new PolicyGenerator(options);
             var policy = await policyGenerator.GenerateAsync(scanResult);
             await File.WriteAllTextAsync(options.Output, policy);
         }
 
-        var reporter = new Reporter(options);
-        await reporter.GenerateReportAsync(scanResult);
+        if (!options.DryRun)
+        {
+            var reporter = new Reporter(options);
+            await reporter.GenerateReportAsync(scanResult);
+        }
 
         return scanResult;
     }

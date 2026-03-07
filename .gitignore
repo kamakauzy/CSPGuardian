@@ -72,3 +72,9 @@ report.*
 *.script*.js
 *.style*.css
 
+# Test files (should not be committed)
+test-repos/
+*.test.*
+test-*
+
+# Note: demo-app/ is intentionally included in the repo for users to test with

@@ -1,0 +1,52 @@
+@helper FormatCurrency(decimal amount)
+{
+    <text>$@amount.ToString("N2")</text>
+}
+
+@helper FormatDate(DateTime date)
+{
+    <text>@date.ToString("MM/dd/yyyy")</text>
+}
+
+@helper ShowAlert(string message, string type = "info")
+{
+    <div class="alert alert-@type" role="alert" onclick="closeAlert(this)">
+        @message
+        <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<!-- Inline Script in Helper File -->
+<script>
+    function closeAlert(element) {
+        element.style.display = 'none';
+    }
+    
+    // Helper function for currency formatting
+    function formatCurrency(amount) {
+        return '$' + parseFloat(amount).toFixed(2);
+    }
+</script>
+
+<style>
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    
+    .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+    
+    .alert .close {
+        float: right;
+        cursor: pointer;
+    }
+</style>
+
