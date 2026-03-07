@@ -8,6 +8,8 @@ It is aimed at legacy ASP.NET, Razor, static HTML, and JavaScript-heavy projects
 
 The intended primary branch for this repository is `main`. If GitHub still shows `CronosProd` as the default branch, treat that as a repository-settings issue rather than the branch of record.
 
+Local git metadata in this repo now points `origin/HEAD` at `main`, but GitHub's server-side default branch must still be changed in repository settings if it has not been updated yet.
+
 ## What the tool does today
 
 - Scans supported files recursively for CSP-relevant findings
@@ -23,6 +25,7 @@ The intended primary branch for this repository is `main`. If GitHub still shows
   - `externalize` - extract inline `<script>` and `<style>` blocks into `.js` / `.css` files and rewrite the source file
 - Generates Markdown, JSON, or CSV reports
 - Generates a starter CSP policy file
+- Includes experimental Go and Python scan/report ports for cross-language adoption
 
 ## Current limits
 
@@ -31,6 +34,7 @@ The intended primary branch for this repository is `main`. If GitHub still shows
 - Nonce mode generates guidance and policy placeholders; it does not patch your application runtime for you.
 - The scanner currently targets `.html`, `.htm`, `.cshtml`, `.aspx`, `.ascx`, `.js`, and `.css`.
 - The JavaScript framework modes (`js-modern`, `js-legacy`) add lightweight heuristics; they are not full framework-aware parsers.
+- The Go and Python ports currently focus on scan/report workflows. They support `none`, `hash`, `nonce`, and externalize guidance, but they do not yet rewrite source files or emit CSP policy files.
 
 ## Prerequisites
 
@@ -52,6 +56,49 @@ Use `dotnet run` from the repo, or run the published binary after `dotnet publis
 ```bash
 dotnet run --project src/CSPGuardian/CSPGuardian.csproj -- \
   scan --path ./demo-app --framework legacy-dotnet --legacy-mode
+```
+
+## Experimental ports
+
+### Go port
+
+Build and test:
+
+```bash
+cd go
+go test ./...
+go build ./cmd/cspguard-go
+```
+
+Run:
+
+```bash
+cd go
+go run ./cmd/cspguard-go scan \
+  --path ../demo-app-core \
+  --framework static \
+  --cleanup hash \
+  --report-format md \
+  --report-output ../artifacts/go-report.md
+```
+
+### Python port
+
+Run tests:
+
+```bash
+PYTHONPATH=python python3 -m unittest discover -s python/tests -v
+```
+
+Run:
+
+```bash
+PYTHONPATH=python python3 -m cspguardian_py scan \
+  --path ./demo-app \
+  --framework legacy-dotnet \
+  --cleanup hash \
+  --report-format json \
+  --report-output ./artifacts/python-report.json
 ```
 
 ## Common examples
@@ -145,11 +192,13 @@ The repository includes intentionally noisy sample applications for exercising t
 
 ```bash
 dotnet test tests/CSPGuardian.Tests/CSPGuardian.Tests.csproj
+cd go && go test ./...
+PYTHONPATH=python python3 -m unittest discover -s python/tests -v
 ```
 
 ## CI
 
-GitHub Actions CI is configured to restore, build, and test the solution on pushes and pull requests.
+GitHub Actions CI is configured to restore, build, and test the .NET, Go, and Python ports on pushes and pull requests.
 
 ## Contributing
 

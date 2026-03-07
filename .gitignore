@@ -66,6 +66,9 @@ venv/
 ENV/
 .venv
 
+# Go build outputs
+go/cspguard-go
+
 # CSPGuardian outputs
 *.csp
 report.*
